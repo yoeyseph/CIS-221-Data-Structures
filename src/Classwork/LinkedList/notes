@@ -1,0 +1,4 @@
+Types of linked Lists:
+1. Singly: head element has (next) to identify the next element. last "next" is null
+2. Doubly
+3. Circular

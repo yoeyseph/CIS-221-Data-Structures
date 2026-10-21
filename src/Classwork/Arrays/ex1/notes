@@ -1,0 +1,10 @@
+public class ArrayInsertion {
+    private int[] array;
+    private in size; //num of actual elements
+    private int capacity; //max size = length
+
+    //constructor
+    public ArrayInsertion(int capacity) {
+    this.capacity = capacity;
+    array = new int[capacity];
+    size = 0;

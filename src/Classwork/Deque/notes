@@ -1,0 +1,4 @@
+Double Ended Queue
+generalized version of stack and queue. Can function as both stack and queue.
+provides O(1) insertion and deletions at both ends when efficintly implemented.
+
