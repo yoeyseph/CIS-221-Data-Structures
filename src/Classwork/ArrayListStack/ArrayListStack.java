@@ -15,7 +15,7 @@ public class ArrayListStack {
         if (stack.isEmpty()) {
             throw new RuntimeException("Stack underflow");
         }
-        return stack.remove(stack.size() -1);
+        return stack.removeLast();
     }
     //peek
     public int peek() {
