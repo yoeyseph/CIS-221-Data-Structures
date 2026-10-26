@@ -21,8 +21,8 @@ class Customer {
 public class TwoQueueSimulation {
     public static void main(String[] args) {
         Random rand = new Random();
-        int numCustomers = 6;
-        int minArrival = 1, maxArrival = 20;
+        int numCustomers = 600;
+        int minArrival = 1, maxArrival = 1200;
         int minService = 2, maxService = 8;
 
         List<Customer> customers = new ArrayList<>();
