@@ -1,5 +1,6 @@
 package Classwork.ArrayListStack;
 import java.util.ArrayList;
+@SuppressWarnings("FieldMayBeFinal")
 public class ArrayListStack {
     private ArrayList<Integer> stack;
 
