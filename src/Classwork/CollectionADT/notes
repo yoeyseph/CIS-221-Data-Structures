@@ -6,4 +6,4 @@ Deque: allows at both ends
 List : maintains sequence and positional access
 Set: does not allow duplicate elements
 Priority Queue: removes elements according to priority
-Map ; stores key-value pairs, with each key being unipue
+Map : stores key-value pairs, with each key being unipue
