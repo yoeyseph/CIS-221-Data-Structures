@@ -1,0 +1,12 @@
+Hello students, welcome to the Java data structures class.
+Java is a programming language, and Java helps us understand objects and classes.
+A collection stores elements. An array collection stores elements in an array.
+Students can add elements, search for elements, and remove elements from a collection.
+The add method inserts a new element into the collection.
+The get method searches for a target element and returns the matching element.
+The contains method checks whether an element exists in the collection.
+The remove method deletes an element from the collection.
+A static variable belongs to a class, while an instance variable belongs to an object.
+When we read a text file, we can count the total words and the unique words.
+The word Java appears several times, and the word collection also appears several times.
+Hello again! Practice Java, learn Java, and enjoy programming.

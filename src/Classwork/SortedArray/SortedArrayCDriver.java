@@ -26,5 +26,4 @@ public class SortedArrayCDriver {
     }
     SortedArrayC<Integer> inte = new SortedArrayC<>(6);
 
-    inte.add(40);
 }
