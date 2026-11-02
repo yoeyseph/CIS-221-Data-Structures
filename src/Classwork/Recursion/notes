@@ -5,6 +5,7 @@
 Fibinochi example
 F(n) = F(n-1) + f(n-2)
 
+the function calls itself until the base case is met
 
 3questions:
 1: Base Case approach
