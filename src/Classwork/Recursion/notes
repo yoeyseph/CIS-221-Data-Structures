@@ -1,0 +1,12 @@
+2 parts:
+1: causes it to terminate
+2: smaller versions of the same problem
+
+Fibinochi example
+F(n) = F(n-1) + f(n-2)
+
+
+3questions:
+1: Base Case approach
+2: Smaller-Caller Questions
+3: General-Case Questions
