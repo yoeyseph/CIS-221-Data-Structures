@@ -1,9 +1,8 @@
 package Classwork.ArrayListStackInterface.a;
-import java.lang.annotation.Documented;
 import java.util.LinkedList;
 public class LinkedListStack implements StackInterface {
 
-    private LinkedList<Integer> stack;
+    private final LinkedList<Integer> stack;
 
     public LinkedListStack() {
         stack = new LinkedList<>();

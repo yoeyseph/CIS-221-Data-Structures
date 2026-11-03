@@ -1,10 +1,5 @@
 package edu.cis221.weather;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +8,15 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 
 public final class WeatherService {
     private static final int TIMEOUT_MILLIS = 8000;
@@ -35,6 +39,8 @@ public final class WeatherService {
         String forecastUrl = "https://api.open-meteo.com/v1/forecast?latitude=" + latitude
                 + "&longitude=" + longitude
                 + "&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m"
+            + "&hourly=temperature_2m,precipitation,precipitation_probability,cloud_cover,wind_speed_10m"
+            + "&forecast_hours=8"
                 + "&temperature_unit=celsius&wind_speed_unit=kmh&timezone=auto";
         JsonObject forecast = getJson(forecastUrl);
         JsonObject current = forecast.has("current") && forecast.get("current").isJsonObject()
@@ -42,6 +48,7 @@ public final class WeatherService {
         if (current == null) {
             throw new IOException("The weather response did not include current conditions.");
         }
+        List<HourlyForecast> hourlyForecast = parseHourlyForecast(forecast);
 
         return new WeatherSnapshot(
                 locationName,
@@ -50,7 +57,73 @@ public final class WeatherService {
                 requiredNumber(current, "relative_humidity_2m"),
                 requiredNumber(current, "wind_speed_10m"),
                 (int) requiredNumber(current, "weather_code"),
-                optionalString(current, "time"));
+                optionalString(current, "time"),
+                hourlyForecast);
+    }
+
+    private List<HourlyForecast> parseHourlyForecast(JsonObject forecast) throws IOException {
+        if (!forecast.has("hourly") || !forecast.get("hourly").isJsonObject()) {
+            return Collections.emptyList();
+        }
+
+        JsonObject hourly = forecast.getAsJsonObject("hourly");
+        JsonArray times = requiredArray(hourly, "time");
+        JsonArray temperatures = requiredArray(hourly, "temperature_2m");
+        JsonArray precipitation = requiredArray(hourly, "precipitation");
+        JsonArray precipitationProbability = requiredArray(hourly, "precipitation_probability");
+        JsonArray cloudCover = requiredArray(hourly, "cloud_cover");
+        JsonArray windSpeed = requiredArray(hourly, "wind_speed_10m");
+
+        int forecastSize = times.size();
+        if (temperatures.size() != forecastSize || precipitation.size() != forecastSize
+                || precipitationProbability.size() != forecastSize || cloudCover.size() != forecastSize
+                || windSpeed.size() != forecastSize) {
+            throw new IOException("The hourly weather response contained inconsistent data.");
+        }
+
+        List<HourlyForecast> results = new ArrayList<>(forecastSize);
+        for (int index = 0; index < forecastSize; index++) {
+            results.add(new HourlyForecast(
+                    requiredString(times, index, "time"),
+                    requiredNumber(temperatures, index, "temperature_2m"),
+                    requiredNumber(precipitation, index, "precipitation"),
+                    requiredNumber(precipitationProbability, index, "precipitation_probability"),
+                    requiredNumber(cloudCover, index, "cloud_cover"),
+                    requiredNumber(windSpeed, index, "wind_speed_10m")));
+        }
+        return Collections.unmodifiableList(results);
+    }
+
+    private JsonArray requiredArray(JsonObject object, String field) throws IOException {
+        JsonElement value = object.get(field);
+        if (value == null || value.isJsonNull() || !value.isJsonArray()) {
+            throw new IOException("The weather response is missing " + field + ".");
+        }
+        return value.getAsJsonArray();
+    }
+
+    private String requiredString(JsonArray values, int index, String field) throws IOException {
+        if (index >= values.size()) {
+            throw new IOException("The weather response is missing " + field + ".");
+        }
+        JsonElement value = values.get(index);
+        if (value == null || value.isJsonNull() || !value.isJsonPrimitive()
+                || !value.getAsJsonPrimitive().isString()) {
+            throw new IOException("The weather response is missing " + field + ".");
+        }
+        return value.getAsString();
+    }
+
+    private double requiredNumber(JsonArray values, int index, String field) throws IOException {
+        if (index >= values.size()) {
+            throw new IOException("The weather response is missing " + field + ".");
+        }
+        JsonElement value = values.get(index);
+        if (value == null || value.isJsonNull() || !value.isJsonPrimitive()
+                || !value.getAsJsonPrimitive().isNumber()) {
+            throw new IOException("The weather response is missing " + field + ".");
+        }
+        return value.getAsDouble();
     }
 
     private JsonObject getJson(String address) throws IOException {
@@ -210,9 +283,11 @@ public final class WeatherService {
         private final double windSpeed;
         private final int weatherCode;
         private final String time;
+        private final List<HourlyForecast> hourlyForecast;
 
         private WeatherSnapshot(String location, double temperature, double apparentTemperature,
-                                double humidity, double windSpeed, int weatherCode, String time) {
+                    double humidity, double windSpeed, int weatherCode, String time,
+                    List<HourlyForecast> hourlyForecast) {
             this.location = location;
             this.temperature = temperature;
             this.apparentTemperature = apparentTemperature;
@@ -220,6 +295,7 @@ public final class WeatherService {
             this.windSpeed = windSpeed;
             this.weatherCode = weatherCode;
             this.time = time;
+            this.hourlyForecast = Collections.unmodifiableList(new ArrayList<>(hourlyForecast));
         }
 
         public String getLocation() {
@@ -248,6 +324,53 @@ public final class WeatherService {
 
         public String getTime() {
             return time;
+        }
+
+        public List<HourlyForecast> getHourlyForecast() {
+            return hourlyForecast;
+        }
+    }
+
+    public static final class HourlyForecast {
+        private final String time;
+        private final double temperature;
+        private final double precipitation;
+        private final double precipitationProbability;
+        private final double cloudCover;
+        private final double windSpeed;
+
+        private HourlyForecast(String time, double temperature, double precipitation,
+                               double precipitationProbability, double cloudCover, double windSpeed) {
+            this.time = time;
+            this.temperature = temperature;
+            this.precipitation = precipitation;
+            this.precipitationProbability = precipitationProbability;
+            this.cloudCover = cloudCover;
+            this.windSpeed = windSpeed;
+        }
+
+        public String getTime() {
+            return time;
+        }
+
+        public double getTemperature() {
+            return temperature;
+        }
+
+        public double getPrecipitation() {
+            return precipitation;
+        }
+
+        public double getPrecipitationProbability() {
+            return precipitationProbability;
+        }
+
+        public double getCloudCover() {
+            return cloudCover;
+        }
+
+        public double getWindSpeed() {
+            return windSpeed;
         }
     }
 
