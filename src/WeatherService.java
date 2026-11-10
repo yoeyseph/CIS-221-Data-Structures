@@ -1,5 +1,4 @@
-package edu.cis221.weather;
-
+/*
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -380,3 +379,5 @@ public final class WeatherService {
         }
     }
 }
+
+ */
