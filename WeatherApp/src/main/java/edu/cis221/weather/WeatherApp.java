@@ -1,8 +1,13 @@
 package edu.cis221.weather;
 
-import edu.cis221.weather.WeatherService.CityNotFoundException;
-import edu.cis221.weather.WeatherService.HourlyForecast;
-import edu.cis221.weather.WeatherService.WeatherSnapshot;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.text.DecimalFormat;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -18,14 +23,10 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.text.DecimalFormat;
-import java.util.List;
+
+import edu.cis221.weather.WeatherService.CityNotFoundException;
+import edu.cis221.weather.WeatherService.HourlyForecast;
+import edu.cis221.weather.WeatherService.WeatherSnapshot;
 
 public final class WeatherApp extends JFrame {
     private static final Color BACKGROUND = new Color(241, 245, 241);
@@ -384,11 +385,6 @@ public final class WeatherApp extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new WeatherApp().setVisible(true);
-            }
-        });
+        SwingUtilities.invokeLater(() -> new WeatherApp().setVisible(true));
     }
 }
