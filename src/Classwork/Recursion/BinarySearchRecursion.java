@@ -1,6 +1,6 @@
 package Classwork.Recursion;
-import java.util.Arrays;
 
+@SuppressWarnings("unused")
 public class BinarySearchRecursion {
 
     public static int binarySearchRecursive(int[] arr, int left, int right, int target) {

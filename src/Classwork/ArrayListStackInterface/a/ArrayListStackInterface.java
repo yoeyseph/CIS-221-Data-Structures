@@ -1,24 +1,9 @@
 package Classwork.ArrayListStackInterface.a;
 import java.util.ArrayList;
 
-interface StackInterface {
-
-    void push(int value);
-
-    int pop();
-
-    int peek();
-
-    boolean isEmpty();
-
-    int size();
-
-    void traverse();
-}
-
 public class ArrayListStackInterface implements StackInterface {
 
-    private ArrayList<Integer> stack;
+    private final ArrayList<Integer> stack;
 
     public ArrayListStackInterface() {
         stack = new ArrayList<>();
