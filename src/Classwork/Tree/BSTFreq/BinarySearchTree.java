@@ -54,7 +54,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
     private void inorder(Node<T> node) {
         if( node == null) {return;}
         inorder(node.left);
-        System.out.print(node.data);
+        System.out.println(node.data);
         inorder(node.right);
 
     }
