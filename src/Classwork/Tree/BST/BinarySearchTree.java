@@ -24,6 +24,9 @@ public class BinarySearchTree<T extends Comparable<T>> implements BSTInterface<T
     private BSTNode<T> root;
     private boolean found;
 
+    public BinarySearchTree() {
+        root = null;
+    }
     public boolean add(T element) {
         if (element == null) {
             throw new IllegalArgumentException("Element cannot be null");
